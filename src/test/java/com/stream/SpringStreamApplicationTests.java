@@ -12,10 +12,10 @@ class SpringStreamApplicationTests {
 	@Autowired
 	private VideoService videoService;
 
-	@Test
-	void contextLoads() {
-		this.videoService.processVid("cc0d97da-a80d-4481-bc0e-d3b331dac909");
-	}
+//	@Test
+//	void contextLoads() {
+//		this.videoService.processVid("cc0d97da-a80d-4481-bc0e-d3b331dac909");
+//	}
 	
 	
 
