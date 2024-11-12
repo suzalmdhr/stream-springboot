@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import com.stream.AppConstants;
 import com.stream.entity.video;
 import com.stream.payload.CustomMessage;
 import com.stream.service.VideoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -148,12 +150,14 @@ return ResponseEntity.status(HttpStatus.OK).body(video);
 
         rangeStart=Long.parseLong(ranges[0]);
         
+        rangeEnd= rangeStart + AppConstants.CHUNK_SIZE-1;
         
-        if(ranges.length > 1) {
-            rangeEnd=Long.parseLong(ranges[1]);
-        }else{
-rangeEnd=fileLength -1;
-        }
+        
+//        if(ranges.length > 1) {
+//            rangeEnd=Long.parseLong(ranges[1]);
+//        }else{
+//rangeEnd=fileLength -1;
+//        }
         
         if(rangeEnd > fileLength -1){
             rangeEnd =fileLength -1;
@@ -170,6 +174,13 @@ rangeEnd=fileLength -1;
         	inputStream.skipNBytes(rangeStart);
         	long contentLength = rangeEnd - rangeStart + 1;
         	
+        	
+        	byte[] data =new byte[(int) contentLength];
+        	
+        	int read= inputStream.read(data,0,data.length);
+        	
+        	System.out.println("read bytes are " + read);
+        	
         	HttpHeaders http = new HttpHeaders();
         	http.add("Content-Range", "bytes "+rangeStart+"-"+rangeEnd+"/"+fileLength);
         	http.add("Cache-Control","no-cache,no-store,must-revalidate");
@@ -182,7 +193,7 @@ rangeEnd=fileLength -1;
         	return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
         			.headers(http)
         			.contentType(MediaType.parseMediaType(contentType))
-        			.body(new InputStreamResource(inputStream));
+        			.body(new ByteArrayResource(data));
 			
 		} catch (IOException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

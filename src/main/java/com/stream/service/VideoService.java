@@ -25,6 +25,10 @@ public interface VideoService {
     //get video by title
 
     public video getVidsByTitle(String vidID);
+    
+    
+    //process video
+    public String processVid(String videoId);
 
 
     
